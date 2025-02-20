@@ -100,7 +100,7 @@ Frontend will run on **http://localhost:5173**.
 This project is licensed under the MIT License.
 
 ## 👨‍💻 Contributors
-- [Your Name](https://github.com/nitin01-cmd)
+- Nitin Singh(https://github.com/nitin01-cmd)
 
 ## ⭐ Support
 If you like this project, give it a ⭐ on GitHub!
