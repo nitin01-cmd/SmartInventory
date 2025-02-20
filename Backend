@@ -1,0 +1,49 @@
+// === Backend (Node.js) === //
+
+const express = require("express");
+const cors = require("cors");
+const admin = require("firebase-admin");
+const QRCode = require("qrcode");
+const serviceAccount = require("./serviceAccountKey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://your-database-url.firebaseio.com",
+});
+
+const db = admin.firestore();
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Add Product
+app.post("/addProduct", async (req, res) => {
+  const { name, quantity, price } = req.body;
+  const productRef = db.collection("products").doc();
+  await productRef.set({ name, quantity, price, id: productRef.id });
+  res.send({ message: "Product added", id: productRef.id });
+});
+
+// Get Products
+app.get("/products", async (req, res) => {
+  const snapshot = await db.collection("products").get();
+  res.send(snapshot.docs.map((doc) => doc.data()));
+});
+
+// Update Stock
+app.put("/updateStock/:id", async (req, res) => {
+  const { id } = req.params;
+  const { quantity } = req.body;
+  await db.collection("products").doc(id).update({ quantity });
+  res.send({ message: "Stock updated" });
+});
+
+// Generate QR Code
+app.post("/generateQR", async (req, res) => {
+  const { storeId } = req.body;
+  const qrCodeData = `https://your-frontend-url.com/store/${storeId}`;
+  const qrCodeImage = await QRCode.toDataURL(qrCodeData);
+  res.send({ qrCodeImage });
+});
+
+app.listen(5000, () => console.log("Server running on port 5000"));
